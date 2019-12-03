@@ -1,8 +1,8 @@
 // ACM model form Williams et al., 2005: An improved analysis of forest carbon
 // dynamics using data assimilation
 
-#include <iostream>     // std::cout
-#include <algorithm>    // std::min
+#include <iostream>   
+#include <algorithm>    
 #include <math.h>
 #include <iostream>
 #include <fstream>
@@ -34,16 +34,16 @@ const double t8 = 2.2 * (pow(10., -2.));
 const double t9 = 2.65 * (pow(10., -6.));
 
 // Carbon pool
-const double cf = 58.;               // carbon stored in foliage
-const double cw = 770.;              // carbon stored in wood
-const double cr = 102.;              // carbon stored in fine roots
-const double clit = 40.;             // carbon stored in fresh foliar and fine  
+const double cf = 58.;              // carbon stored in foliage
+const double cw = 770.;             // carbon stored in wood
+const double cr = 102.;             // carbon stored in fine roots
+const double clit = 40.;            // carbon stored in fresh foliar and fine  
                                     // root litter
-const double csomwd = 9897.;         // Soil organic matter plus woody debris
+const double csomwd = 9897.;        // Soil organic matter plus woody debris
 
 // Required input values
-const double doy = 172.;             // Day of the year
-const double lat_deg = 30.;          // Latitude (degrees)
+const double doy = 172.;            // Day of the year
+const double lat_deg = 30.;         // Latitude (degrees)
 const double water_pot = 0.7524;    // Max. soil-leaf water potential 
                                     // difference (MPa)
 const double Tmin = 249.742;        // Daily minimum Temperature
@@ -51,7 +51,7 @@ const double Tmax = 299.95;         // Daily maximum Temperature
 const double Rtot = 1.0276;         // Total plant-soil hydraulic resistance
 const double N = 2.7;               // Average foliar N (gNm-2 leaf area)
 const double I = 26.0118;           // Irradiance (MJ m-2 day-1)
-const double ca = 355.;              // Atmospheric CO2 concentration
+const double ca = 355.;             // Atmospheric CO2 concentration
 
 // Variables that are calculated
 double q;                           // ?
