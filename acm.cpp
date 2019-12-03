@@ -53,7 +53,7 @@ const double N = 2.7;               // Average foliar N (gNm-2 leaf area)
 const double I = 26.0118;           // Irradiance (MJ m-2 day-1)
 const double ca = 355.;             // Atmospheric CO2 concentration
 
-// Variables that are calculated
+// Variables that need to be calculated
 double q;                           // ?
 double solar_declination;           // Solar declination (radians)
 double L;                           // Leaf area index
@@ -62,7 +62,7 @@ double lat_rad;                     // Latitude (radians)
 double s;                           // day length (hours)
 double gc;                          // ?
 double p;                           // ?
-double ci;                          // CO2 concentration in leaf 
+double ci;                          // Internal CO2 concentration 
 double G;                           // GPP (g C m-2 day-1)
             
 // Define function to calculate GPP
