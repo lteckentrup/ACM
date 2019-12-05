@@ -1,8 +1,8 @@
 // ACM model form Williams et al., 2005: An improved analysis of forest carbon
 // dynamics using data assimilation
 
-#include <iostream>     
-#include <algorithm>    
+#include <iostream>
+#include <algorithm>
 #include <math.h>
 #include <iostream>
 #include <fstream>
@@ -12,17 +12,22 @@
 // Define pi
 const double pi = atan(1)*4;
 
+struct Point {
+    const double a1 = 2.155;
+    const double a2 = 0.0142;
+    const double a3 = 217.9;
+    const double a4 = 0.980;
+    const double a5 = 0.155;
+    const double a6 = 2.653;
+    const double a7 = 4.309;
+    const double a8 = 0.060;
+    const double a9 = 1.062;
+    const double a10 = 0.0006;
+} params;
+
+
 // Parameters from appendix of paper
-const double a1 = 2.155;
-const double a2 = 0.0142;
-const double a3 = 217.9;
-const double a4 = 0.980;
-const double a5 = 0.155;
-const double a6 = 2.653;
-const double a7 = 4.309;
-const double a8 = 0.060;
-const double a9 = 1.062;
-const double a10 = 0.0006;
+
 
 // Parameter estimates from paper
 const double t1 = 4.4 * (pow(10., -6.));
@@ -43,12 +48,12 @@ const double clit = 40.;            // carbon stored in fresh foliar and fine
                                     // root litter
 const double csomwd = 9897.;        // Soil organic matter plus woody debris
 
-double GPP(double, double, double, double, double, double, double, double, 
-           double);
+double GPP(double, double, double, double, double, double, double, double,
+           double, struct);
 
 // Calculate GPP
 int main () {
-    
+
     // Required input values
     const double lat_deg = 30.;         // Latitude (degrees)
     const double ca = 355.;             // Atmospheric CO2 concentration
@@ -60,22 +65,24 @@ int main () {
     const double N = 2.7;               // Average foliar N (gNm-2 leaf area)
     const double I = 26.0118;           // Irradiance (MJ m-2 day-1)
     double G;
-    
+
+    struct Point params;
+
     std::vector<int> day;
     for( int i = 1; i <= 365; i++ )
         day.push_back( i );
 
     // Write output to ASCII: Open file
     std::ofstream outfile ("acm_output_lat_30.txt");
-    
+
     for(std::size_t i=0; i<day.size(); ++i){
         G=GPP(lat_deg, ca, water_pot, Tmin, Tmax, Rtot, N, I, day[i]);
         std::cout << G << '\n';
-        
+
         // Write G into file
         outfile  << G << std::endl;
-    }  
-    
+    }
+
     // Close ASCII file
     outfile.close();
 
@@ -84,7 +91,7 @@ int main () {
 
 // Define function to calculate GPP
 double GPP(double lat_deg, double ca, double water_pot, double Tmin, double Tmax,
-           double Rtot, double N, double I, double doy){
+           double Rtot, double N, double I, double doy, struct params){
 
     // Variables that need to be calculated
 
@@ -99,7 +106,7 @@ double GPP(double lat_deg, double ca, double water_pot, double Tmin, double Tmax
     double G;                            // GPP (g C m-2 day-1)
     double q;
 
-    q = a3 + a4;
+    q = params.a3 + params.a4;
     solar_declination = -0.408 * cos(((360. * (doy + 10.))/(365.)) * (pi/180.));
     lai  = cf/111.;
     e0  = (a7 * pow(lai, 2.))/((pow(lai, 2.))+a9);
