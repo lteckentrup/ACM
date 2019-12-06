@@ -9,121 +9,253 @@
 #include <vector>
 #include <string>
 
-// Define pi
-const double pi = atan(1)*4;
+#include <sstream>
+#include <cstdlib>
+#include "acm.h"
 
-struct Point {
-    const double a1 = 2.155;
-    const double a2 = 0.0142;
-    const double a3 = 217.9;
-    const double a4 = 0.980;
-    const double a5 = 0.155;
-    const double a6 = 2.653;
-    const double a7 = 4.309;
-    const double a8 = 0.060;
-    const double a9 = 1.062;
-    const double a10 = 0.0006;
-} params;
-
-
-// Parameters from appendix of paper
-
-
-// Parameter estimates from paper
-const double t1 = 4.4 * (pow(10., -6.));
-const double t2 = 0.47;
-const double t3 = 0.31;
-const double t4 = 0.43;
-const double t5 = 2.7 * (pow(10., -3.));
-const double t6 = 2.06 * (pow(10., -6.));
-const double t7 = 2.48 * (pow(10., -3.));
-const double t8 = 2.2 * (pow(10., -2.));
-const double t9 = 2.65 * (pow(10., -6.));
-
-// Carbon pool
-const double cf = 58.;              // carbon stored in foliage
-const double cw = 770.;             // carbon stored in wood
-const double cr = 102.;             // carbon stored in fine roots
-const double clit = 40.;            // carbon stored in fresh foliar and fine
-                                    // root litter
-const double csomwd = 9897.;        // Soil organic matter plus woody debris
+using namespace std;
 
 double GPP(double, double, double, double, double, double, double, double,
-           double, struct);
+           double, struct Point);
 
-// Calculate GPP
+vector<string> split (const string &s, char delim) {
+    vector<string> result;
+    stringstream ss (s);
+    string item;
+
+    while (getline (ss, item, delim)) {
+        result.push_back (item);
+    }
+
+    return result;
+}
+
 int main () {
 
     // Required input values
-    const double lat_deg = 30.;         // Latitude (degrees)
-    const double ca = 355.;             // Atmospheric CO2 concentration
-    const double water_pot = 0.7524;    // Max. soil-leaf water potential
-                                        // difference (MPa)
-    const double Tmin = 249.742;        // Daily minimum Temperature
-    const double Tmax = 299.95;         // Daily maximum Temperature
-    const double Rtot = 1.0276;         // Total plant-soil hydraulic resistance
-    const double N = 2.7;               // Average foliar N (gNm-2 leaf area)
-    const double I = 26.0118;           // Irradiance (MJ m-2 day-1)
+    double lat_deg = 30.;         // Latitude (degrees)
+    double ca;                    // Atmospheric CO2 concentration
+    double water_pot;             // Max. soil-leaf water potential
+                                  // difference (MPa)
+    double Tmin_celsius;          // Daily minimum Temperature (Celsius)
+    double Tmax_celsius;          // Daily maximum Temperature (Celsius)
+    double Rtot;                  // Total plant-soil hydraulic resistance
+    double N;                     // Average foliar N (gNm-2 leaf area)
+    double I;                     // Irradiance (MJ m-2 day-1)
     double G;
 
+    double doy;
+    double temp;
+   
     struct Point params;
+    
+    int i, j, crap, cnt;
+    string line;
+    
+    // Define strings for variables from ASCII file
+    string DOY;
+    string TEMP;
+    string TMAX;
+    string TMIN;
+    string RAD;
+    string PSID;
+    string CA;
+    string RTOT;
+    string NIT;
+    string LAI;
+        
+    // Open file     
+    ifstream myfile ("dalec_drivers.OREGON.no_obs.dat");     
+    
+    // Figure out how big the file is...
+    if (myfile.is_open()){
+        cnt = 0;
+        while(true){
+            
+            // Get one line from the file
+            getline(myfile, line);
+            
+            // possible as ifstream offers a bool cast operator... 
+            if(!myfile) 
+                break;
+            cnt++;
+        }
+        
+        // Rewind the input file
+        // Clear error flags
+        myfile.clear(); 
+        
+        // Set the file get pointer back to the beginning 
+        myfile.seekg(0, std::ios::beg); 
+        
+    } else {
+        // If the file is not open output
+        cout << "Unable to open file"; 
+    }
+    
+    // Read the file.
 
-    std::vector<int> day;
-    for( int i = 1; i <= 365; i++ )
-        day.push_back( i );
-
-    // Write output to ASCII: Open file
-    std::ofstream outfile ("acm_output_lat_30.txt");
-
-    for(std::size_t i=0; i<day.size(); ++i){
-        G=GPP(lat_deg, ca, water_pot, Tmin, Tmax, Rtot, N, I, day[i]);
-        std::cout << G << '\n';
-
-        // Write G into file
-        outfile  << G << std::endl;
+    if (myfile.is_open()){
+        i = 0;
+        std::ofstream outfile ("acm_gpp_lat_30.txt");  
+        while(i < cnt){
+             
+            // Get one line from the file
+            getline(myfile, line); 
+            vector<string> v = split (line, ' ');
+            
+                                  
+            
+            for (j = 0; j < v.size(); j++){
+                // Grab different variables
+                DOY = v[0];
+                TEMP = v[1];
+                TMAX = v[2];
+                TMIN = v[3];
+                RAD = v[4];
+                PSID = v[5];
+                CA = v[6];
+                RTOT = v[7];
+                NIT = v[8];
+              
+                // Convert string to double
+                doy = atof(DOY.c_str());
+                temp = atof(TEMP.c_str());
+                Tmax_celsius = atof(TMAX.c_str());
+                Tmin_celsius = atof(TMIN.c_str());
+                I = atof(RAD.c_str());
+                water_pot = atof(PSID.c_str());
+                ca = atof(CA.c_str());
+                Rtot = atof(RTOT.c_str());
+                N = atof(NIT.c_str());
+      
+                // Calculate GPP
+                G=GPP(lat_deg, ca, water_pot, Tmin_celsius, Tmax_celsius, Rtot, 
+                      N, I, doy, params);
+                                       
+            }   
+            
+            // Write GPP to ASCII file
+            outfile  << G << std::endl;   
+            i++;
+            
+            // Print GPP
+            std::cout<<G<<'\n';            
+            
+        }
+        
+        // Close input file
+        myfile.close(); 
+        
+        // Close output file
+        outfile.close();        
+    } else {
+        // If the file is not open output
+        cout << "Unable to open file"; 
     }
 
-    // Close ASCII file
-    outfile.close();
-
-    return 0;
+    return(0);
 }
 
-// Define function to calculate GPP
-double GPP(double lat_deg, double ca, double water_pot, double Tmin, double Tmax,
-           double Rtot, double N, double I, double doy, struct params){
-
-    // Variables that need to be calculated
+// Define function for solar stuff FIXME function is not working yet
+double sun(double doy, double lat_deg){
 
     double solar_declination;           // Solar declination (radians)
-    double lai;                         // Leaf area index
-    double e0;                          // ?
     double lat_rad;                     // Latitude (radians)
-    double s;                           // day length (hours)
-    double gc;                          // stomatal conductance
-    double p;                           // ?
-    double ci;                          // Internal CO2 concentration
-    double G;                            // GPP (g C m-2 day-1)
-    double q;
+    double s;
 
-    q = params.a3 + params.a4;
+    // Calculate solar declination    
     solar_declination = -0.408 * cos(((360. * (doy + 10.))/(365.)) * (pi/180.));
-    lai  = cf/111.;
-    e0  = (a7 * pow(lai, 2.))/((pow(lai, 2.))+a9);
+    
+    // Convert latitude from degrees to radians
     lat_rad = lat_deg * (pi/180.);
+    
+    // Calculate day length
     if ((tan(lat_rad)*tan(solar_declination))>=1) {
         s = 24.;
     } else {
         s = 24. * acos((-1. * tan(lat_rad) * tan(solar_declination))) / pi;
     }
-    gc = (pow(water_pot,a10))/((0.5 *(Tmax-Tmin)) +(a6 * Rtot));
-    p = ((a1 * N * lai)/gc) * exp(Tmax * a8);
-    ci = 0.5 * (ca + q - p + sqrt(pow((ca + q - p), 2.) - ((4. * ca * q) - \
-         (p *a3))));
+    
+    return(s);
+}
 
-    // GPP (g C m-2 day-1)
-    G = (e0 * I * gc * (ca-ci))/((e0 * I) + (gc * (ca - ci)))*((a2*s)+a5);
+// Define function to calculate GPP
+double GPP(double lat_deg, double ca, double water_pot, double Tmin_celsius, 
+           double Tmax_celsius, double Rtot, double N, double I, double doy, 
+           struct Point params){
 
-    //return;
-    return (G); // ASK MARTIN
+    // Variables that need to be calculated
+
+    double lai;                         // Leaf area index
+    double e0;                          // Canopy-level quantum yield
+    double s;                           // Day length (hours)
+    double gc;                          // Stomatal conductance
+    double p;                           // ?
+    double ci;                          // Internal CO2 concentration
+    double G;                           // GPP (g C m-2 day-1)
+    double q;
+    double Tmin_kelvin;                 // Daily minimum Temperature (Kelvin)
+    double Tmax_kelvin;                 // Daily maximum Temperature (Kelvin)
+    double water_pot_abs;               // Absolute value of Max. soil-leaf 
+                                        // water potential difference (MPa)
+    
+    // Convert temperature from Celsius to Kelvin
+    Tmax_kelvin = Tmax_celsius + 273.15;
+    Tmin_kelvin = Tmin_celsius + 273.15;    
+    
+    // Calculate absolute value for water potential
+    if (water_pot<0){
+        water_pot_abs = water_pot * (-1);      
     }
+    else {
+        water_pot_abs = water_pot;
+        }
+    
+    // Call function to calculate sun stuff FIXME is not working yet
+    // sun(doy, lat_deg);
+    
+        
+    double solar_declination;           // Solar declination (radians)
+    double lat_rad;                     // Latitude (radians)
+    //double s;
+
+    // Calculate solar declination    
+    solar_declination = -0.408 * cos(((360. * (doy + 10.))/(365.)) * (pi/180.));
+    
+    // Convert latitude from degrees to radians
+    lat_rad = lat_deg * (pi/180.);
+    
+    // Calculate day length
+    if ((tan(lat_rad)*tan(solar_declination))>=1) {
+        s = 24.;
+    } else {
+        s = 24. * acos((-1. * tan(lat_rad) * tan(solar_declination))) / pi;
+    }
+    
+    // Calculate q    
+    q = params.a3 + params.a4;
+   
+    // Calculate leaf area index LAI
+    lai  = cf/111.;
+    
+    // Calculate canopy-level quantum yield eo
+    e0  = (params.a7 * pow(lai, 2.))/((pow(lai, 2.))+params.a9);
+    
+    // Calculate stomatal conductance
+    gc = (pow(water_pot_abs,params.a10))/((0.5 *(Tmax_kelvin-Tmin_kelvin)) \
+         + (params.a6 * Rtot));
+    
+    // Calculate p
+    p = ((params.a1 * N * lai)/gc) * exp(Tmax_kelvin * params.a8);
+    
+    // Calculate Internal CO2 concentration
+    ci = 0.5 * (ca + q - p + sqrt(pow((ca + q - p), 2.) - ((4. * ca * q) - \
+         (p *params.a3))));
+
+    // Calculate GPP
+    G = (e0 * I * gc * (ca-ci))/((e0 * I) + (gc * (ca - ci)))*((params.a2*s) + \
+         params.a5);
+        
+    return (G);
+}
