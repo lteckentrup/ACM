@@ -103,9 +103,7 @@ int main () {
             // Get one line from the file
             getline(myfile, line); 
             vector<string> v = split (line, ' ');
-            
-                                  
-            
+
             for (j = 0; j < v.size(); j++){
                 // Grab different variables
                 DOY = v[0];
