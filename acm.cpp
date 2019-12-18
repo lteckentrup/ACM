@@ -42,7 +42,7 @@ int main () {
     double Rtot;                  // Total plant-soil hydraulic resistance
     double N;                     // Average foliar N (gNm-2 leaf area)
     double I;                     // Irradiance (MJ m-2 day-1)
-    double G;
+    double G;                     // GPP (g C m-2 day-1)
 
     double doy;
     double temp;
@@ -160,7 +160,7 @@ double sun(double doy, double lat_deg){
 
     double solar_declination;           // Solar declination (radians)
     double lat_rad;                     // Latitude (radians)
-    double s;
+    double s;                           // Day length (hours)
 
     // Calculate solar declination    
     solar_declination = -0.408 * cos(((360. * (doy + 10.))/(365.)) * (pi/180.));
@@ -211,25 +211,7 @@ double GPP(double lat_deg, double ca, double water_pot, double Tmin_celsius,
         }
     
     // Call function to calculate sun stuff FIXME is not working yet
-    // sun(doy, lat_deg);
-    
-        
-    double solar_declination;           // Solar declination (radians)
-    double lat_rad;                     // Latitude (radians)
-    //double s;
-
-    // Calculate solar declination    
-    solar_declination = -0.408 * cos(((360. * (doy + 10.))/(365.)) * (pi/180.));
-    
-    // Convert latitude from degrees to radians
-    lat_rad = lat_deg * (pi/180.);
-    
-    // Calculate day length
-    if ((tan(lat_rad)*tan(solar_declination))>=1) {
-        s = 24.;
-    } else {
-        s = 24. * acos((-1. * tan(lat_rad) * tan(solar_declination))) / pi;
-    }
+    s = sun(doy, lat_deg);   
     
     // Calculate q    
     q = params.a3 + params.a4;
