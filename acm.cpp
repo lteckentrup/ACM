@@ -86,7 +86,7 @@ int main () {
         myfile.clear(); 
         
         // Set the file get pointer back to the beginning 
-        myfile.seekg(0, std::ios::beg); 
+        myfile.seekg(0, ios::beg); 
         
     } else {
         // If the file is not open output
@@ -97,7 +97,7 @@ int main () {
 
     if (myfile.is_open()){
         i = 0;
-        std::ofstream outfile ("acm_gpp_lat_30.txt");  
+        ofstream outfile ("acm_gpp_lat_30.txt");  
         while(i < cnt){
              
             // Get one line from the file
@@ -134,11 +134,11 @@ int main () {
             }   
             
             // Write GPP to ASCII file
-            outfile  << G << std::endl;   
+            outfile  << G << endl;   
             i++;
             
             // Print GPP
-            std::cout<<G<<'\n';            
+            cout<<G<<'\n';            
             
         }
         
